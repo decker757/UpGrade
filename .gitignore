@@ -1,0 +1,42 @@
+# === Node.js / React / Next.js ===
+/node_modules/
+.env
+.env.local
+.next/
+dist/
+build/
+.cache/
+.vite/
+
+# === Python / Flask ===
+__pycache__/
+*.py[cod]
+*.sqlite3
+instance/
+.env.*
+venv/
+.venv/
+env/
+*.egg-info/
+
+# Flask bytecode cache
+*.pyo
+
+# === Common logs and OS files ===
+*.log
+.DS_Store
+Thumbs.db
+
+# === VSCode or IDE config ===
+.vscode/
+.idea/
+
+# === Testing and coverage ===
+coverage/
+.nyc_output/
+*.cover
+
+# === Misc ===
+*.swp
+*.bak
+*.tmp
