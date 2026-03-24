@@ -147,12 +147,12 @@ python seed.py
 ## Deployment (AWS EC2)
 
 ```bash
-ssh -i your-key.pem ubuntu@3.107.250.225
+ssh -i your-key.pem ubuntu@3.26.103.83
 git clone <repo> HackInTheClouds
 # Create .env files on the server
 bash deploy.sh
 ```
 
-Set `NEXT_PUBLIC_FLASK_URL=http://3.107.250.225:5001` in the server's `frontend/.env`.
+Set `NEXT_PUBLIC_FLASK_URL=http://3.26.103.83:5001` in the server's `frontend/.env`.
 
 Ensure EC2 Security Group allows inbound TCP on ports **3000** and **5001**.

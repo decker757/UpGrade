@@ -27,8 +27,8 @@ app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
 CORS(app, supports_credentials=True, origins=[
     "http://localhost:3000",
-    "http://3.107.250.225:3000",
-    "http://3.107.250.225",
+    "http://3.26.103.83:3000",
+    "http://3.26.103.83",
 ])
 
 listings = []

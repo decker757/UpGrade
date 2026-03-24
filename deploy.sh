@@ -25,4 +25,4 @@ echo "==> Restarting services with PM2..."
 pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
 pm2 save
 
-echo "==> Done. App running at http://3.107.250.225"
+echo "==> Done. App running at http://3.26.103.83"
