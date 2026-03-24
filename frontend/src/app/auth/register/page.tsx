@@ -210,34 +210,6 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">I am a</label>
-              <div className="flex space-x-6">
-                <label className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="userType"
-                    value="Tutor"
-                    checked={formData.userType === 'Tutor'}
-                    onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
-                    className="text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-700 font-medium">Tutor</span>
-                </label>
-                <label className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    name="userType"
-                    value="Tutee"
-                    checked={formData.userType === 'Tutee'}
-                    onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
-                    className="text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-700 font-medium">Tutee</span>
-                </label>
-              </div>
-            </div>
-
-            <div>
               <label htmlFor="photourl" className="block text-sm font-bold text-gray-700 mb-2">
                 Photo URL
               </label>
