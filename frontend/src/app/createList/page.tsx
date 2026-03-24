@@ -66,7 +66,7 @@ export default function CreateListingPage() {
   };
 
   // 4. Send to Flask
-  const response = await fetch("http://52.203.210.111:5000/create_listing", {
+  const response = await fetch("http://localhost:5001/create_listing", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

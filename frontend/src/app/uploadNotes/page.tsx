@@ -9,7 +9,7 @@ export default function uploadNotes() {
   const handleUpload = async () => {
   if (!file) return
 
-  const res = await fetch(`http://localhost:5000/get-s3-url?filename=${file.name}&contentType=${file.type}`)
+  const res = await fetch(`http://localhost:5001/get-s3-url?filename=${file.name}&contentType=${file.type}`)
   const { url } = await res.json()
 
   const uploadRes = await fetch(url, {
