@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify, session
-from flask_cors import CORS
 from dataclasses import dataclass
 import os
 import boto3
@@ -25,11 +24,34 @@ supabase: Client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
-CORS(app, supports_credentials=True, origins=[
+
+ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://3.26.103.83:3000",
     "http://3.26.103.83",
-])
+]
+
+@app.after_request
+def add_cors(response):
+    origin = request.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, x-refresh-token"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return response
+
+@app.route("/", defaults={"path": ""}, methods=["OPTIONS"])
+@app.route("/<path:path>", methods=["OPTIONS"])
+def handle_options(path):
+    response = jsonify({})
+    origin = request.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, x-refresh-token"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return response, 200
 
 listings = []
 
