@@ -15,8 +15,10 @@ import {
 } from 'lucide-react'
 
 import { supabase } from '@/lib/supabaseClient'
+import { useRequireAuth } from '@/lib/useRequireAuth'
 
 export default function CreateListingPage() {
+  useRequireAuth()
   const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     userType: 'Tutor',

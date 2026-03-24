@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { GraduationCap, BookOpen, FileText, AlignLeft, School } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
+import { useRequireAuth } from '@/lib/useRequireAuth'
 
 const SMU_SCHOOLS = [
   'School of Computing and Information Systems',
@@ -26,6 +27,7 @@ export default function UploadNotesPage() {
     description: '',
   })
   const [file, setFile] = useState<File | null>(null)
+  useRequireAuth()
   const [uploading, setUploading] = useState(false)
   const router = useRouter()
 
