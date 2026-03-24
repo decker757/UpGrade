@@ -34,7 +34,7 @@ export default function TutorProfilePage({ params }: { params: { id: string } })
     setTutor(data.profile)
     setReviews(data.reviews)
     setListings(data.listings)
-    setUniqueSubjects([...new Set<string>(data.listings.map((l: any) => l.course_code))])
+    setUniqueSubjects(Array.from(new Set<string>(data.listings.map((l: any) => l.course_code))))
     setLoading(false)
   }
 
