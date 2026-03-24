@@ -229,27 +229,52 @@ def submit_review():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/get-s3-url', methods=['GET'])
-def get_s3_url():
-    file_name = request.args.get('filename')
-    content_type = request.args.get('contentType')
+@app.route('/upload-notes', methods=['POST'])
+def upload_notes():
+    access_token = request.headers.get("Authorization", "").replace("Bearer ", "").strip()
+    refresh_token = request.headers.get("x-refresh-token", "").strip()
 
-    if not file_name or not content_type:
-        return jsonify({'error': 'Missing filename or contentType'}), 400
+    authed_client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
+    authed_client.auth.set_session(access_token, refresh_token)
 
-    # Generate a short-lived presigned URL so the client can upload directly to S3
-    # without routing the file through this server
+    file = request.files.get('file')
+    user_id = request.form.get('user_id')
+    title = request.form.get('title')
+    subject = request.form.get('subject')
+    module_code = request.form.get('module_code')
+    description = request.form.get('description', '')
+
+    if not all([file, user_id, title, subject, module_code]):
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    s3_key = f"notes/{user_id}/{int(__import__('time').time() * 1000)}_{file.filename}"
+
     try:
-        url = s3_client.generate_presigned_url(
-            ClientMethod='put_object',
-            Params={
-                'Bucket': os.getenv("S3_BUCKET_NAME"),
-                'Key': file_name,
-                'ContentType': content_type
-            },
-            ExpiresIn=60
+        s3_client.upload_fileobj(
+            file,
+            os.getenv("S3_BUCKET_NAME"),
+            s3_key,
+            ExtraArgs={'ContentType': 'application/pdf'}
         )
-        return jsonify({'url': url})
+    except Exception as e:
+        return jsonify({'error': f'S3 upload failed: {str(e)}'}), 500
+
+    s3_base = f"https://{os.getenv('S3_BUCKET_NAME')}.s3.{os.getenv('AWS_REGION')}.amazonaws.com"
+    file_url = f"{s3_base}/{s3_key}"
+
+    try:
+        insert_response = authed_client.table("NOTES").insert({
+            'user_id': user_id,
+            'title': title,
+            'subject': subject,
+            'module_code': module_code,
+            'description': description,
+            'file_url': file_url,
+        }).execute()
+
+        if insert_response.data:
+            return jsonify({'success': True, 'note': insert_response.data}), 201
+        return jsonify({'error': 'Failed to insert note'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

@@ -17,7 +17,6 @@ const SMU_SCHOOLS = [
 ]
 
 const FLASK_URL = process.env.NEXT_PUBLIC_FLASK_URL ?? 'http://localhost:5001'
-const S3_BASE_URL = process.env.NEXT_PUBLIC_S3_BASE_URL ?? ''
 
 export default function UploadNotesPage() {
   const [formData, setFormData] = useState({
@@ -47,42 +46,25 @@ export default function UploadNotesPage() {
       return
     }
 
-    // Unique S3 key to avoid collisions
-    const s3Key = `notes/${user.id}/${Date.now()}_${file.name}`
+    // Upload file + metadata in one request through Flask (Flask uploads to S3 server-side)
+    const body = new FormData()
+    body.append('file', file)
+    body.append('user_id', user.id)
+    body.append('title', formData.title)
+    body.append('subject', formData.subject)
+    body.append('module_code', formData.module_code)
+    body.append('description', formData.description)
 
-    // Step 1: Get presigned PUT URL
-    const urlRes = await fetch(`${FLASK_URL}/get-s3-url?filename=${encodeURIComponent(s3Key)}&contentType=application/pdf`)
-    const { url, error: urlError } = await urlRes.json()
-    if (urlError || !url) { alert('Failed to get upload URL.'); setUploading(false); return }
-
-    // Step 2: Upload file to S3
-    const uploadRes = await fetch(url, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/pdf' },
-      body: file,
-    })
-    if (!uploadRes.ok) { alert('File upload to S3 failed.'); setUploading(false); return }
-
-    // Step 3: Save metadata to DB
-    const fileUrl = `${S3_BASE_URL}/${s3Key}`
-    const metaRes = await fetch(`${FLASK_URL}/notes`, {
+    const metaRes = await fetch(`${FLASK_URL}/upload-notes`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${session.access_token}`,
         'x-refresh-token': session.refresh_token ?? '',
       },
-      body: JSON.stringify({
-        user_id: user.id,
-        title: formData.title,
-        subject: formData.subject,
-        module_code: formData.module_code,
-        description: formData.description,
-        file_url: fileUrl,
-      }),
+      body,
     })
 
-    if (!metaRes.ok) { alert('File uploaded but failed to save metadata.'); setUploading(false); return }
+    if (!metaRes.ok) { alert('Upload failed.'); setUploading(false); return }
 
     router.push('/')
   }
