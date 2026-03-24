@@ -51,11 +51,12 @@ const TutorProfiles = ({ filters }: Props) => {
           <div key={tutor.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <div className="relative">
               <Image
-                src={tutor.photourl}
+                src={tutor.photourl || `https://ui-avatars.com/api/?name=${tutor.firstname}+${tutor.lastname}&background=6366f1&color=fff&size=400`}
                 alt={`${tutor.firstname} ${tutor.lastname}`}
                 width={400}
                 height={200}
                 className="w-full h-48 object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${tutor.firstname}+${tutor.lastname}&background=6366f1&color=fff&size=400` }}
               />
               <button className="absolute top-4 right-4 p-2 bg-white/90 rounded-full hover:bg-white transition-colors">
                 <Heart className="h-4 w-4 text-gray-600" />

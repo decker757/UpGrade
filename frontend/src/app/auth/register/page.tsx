@@ -245,7 +245,6 @@ export default function RegisterPage() {
                 <input
                   id="photourl"
                   type="url"
-                  required
                   value={formData.photourl}
                   onChange={(e) => setFormData({ ...formData, photourl: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder:font-semibold"

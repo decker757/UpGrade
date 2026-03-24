@@ -62,11 +62,12 @@ const ModulesProfiles = () => {
           <div key={module.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <div className="relative">
               <Image
-                src={module.photourl}
-                alt={module.name}
+                src={module.photourl || 'https://placehold.co/400x200/6366f1/white?text=Listing'}
+                alt={module.title}
                 width={400}
                 height={200}
                 className="w-full h-48 object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/400x200/6366f1/white?text=Listing' }}
               />
               <button className="absolute top-4 right-4 p-2 bg-white/90 rounded-full hover:bg-white transition-colors">
                 <Heart className="h-4 w-4 text-gray-600" />

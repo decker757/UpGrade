@@ -65,11 +65,12 @@ export default function TutorProfilePage({ params }: { params: { id: string } })
             {/* Avatar — overlaps the banner */}
             <div className="-mt-16 mb-4">
               <Image
-                src={tutor.photourl}
+                src={tutor.photourl || `https://ui-avatars.com/api/?name=${tutor.firstname}+${tutor.lastname}&background=6366f1&color=fff&size=128`}
                 alt={`${tutor.firstname} ${tutor.lastname}`}
                 width={128}
                 height={128}
                 className="rounded-full border-4 border-white shadow-lg"
+                onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${tutor.firstname}+${tutor.lastname}&background=6366f1&color=fff&size=128` }}
               />
             </div>
 
