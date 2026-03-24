@@ -81,7 +81,10 @@ def create_listing():
     access_token = request.headers.get("Authorization", "").replace("Bearer ", "").strip()
     refresh_token = request.headers.get("x-refresh-token", "").strip()
 
-    authed_client.auth.set_session(access_token, refresh_token)
+    try:
+        authed_client.auth.set_session(access_token, refresh_token)
+    except Exception:
+        pass
 
     required_fields = ['user_id', 'userType', 'title', 'course_code', 'rate', 'description', 'location', 'photourl']
     if not all(field in data for field in required_fields):
@@ -203,7 +206,10 @@ def submit_review():
     refresh_token = request.headers.get("x-refresh-token", "").strip()
 
     authed_client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
-    authed_client.auth.set_session(access_token, refresh_token)
+    try:
+        authed_client.auth.set_session(access_token, refresh_token)
+    except Exception:
+        pass
 
     required_fields = ['tutor_id', 'student_id', 'rating', 'comment', 'subject']
     if not all(field in data for field in required_fields):
@@ -235,7 +241,10 @@ def upload_notes():
     refresh_token = request.headers.get("x-refresh-token", "").strip()
 
     authed_client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
-    authed_client.auth.set_session(access_token, refresh_token)
+    try:
+        authed_client.auth.set_session(access_token, refresh_token)
+    except Exception:
+        pass
 
     file = request.files.get('file')
     user_id = request.form.get('user_id')
@@ -298,7 +307,10 @@ def create_note():
     refresh_token = request.headers.get("x-refresh-token", "").strip()
 
     authed_client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
-    authed_client.auth.set_session(access_token, refresh_token)
+    try:
+        authed_client.auth.set_session(access_token, refresh_token)
+    except Exception:
+        pass
 
     required_fields = ['user_id', 'title', 'subject', 'module_code', 'file_url']
     if not all(field in data for field in required_fields):
