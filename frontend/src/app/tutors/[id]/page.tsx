@@ -6,87 +6,38 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import { supabase } from '@/lib/supabaseClient'
-
-// ICONS (you must install lucide-react or adjust accordingly)
 import { ArrowLeft, Star, MapPin, Clock, Heart, Share2, BookOpen, Calendar, Award, CheckCircle } from 'lucide-react'
-
-// YOUR OWN COMPONENTS (adjust import paths based on your project structure)
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
+const FLASK_URL = 'http://localhost:5001'
+
 export default function TutorProfilePage({ params }: { params: { id: string } }) {
   const [tutor, setTutor] = useState<any | null>(null)
-  const [loading, setLoading] = useState(true)
-
   const [reviews, setReviews] = useState<any[]>([])
   const [uniqueSubjects, setUniqueSubjects] = useState<string[]>([])
-  
-  const fetchReviews = async () => {
-    const { data, error } = await supabase
-      .from('REVIEWS')
-      .select(`
-        id, rating, comment, subject, created_at,
-        student:student_id ( firstname, lastname )
-      `)
-      .eq('tutor_id', params.id)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('❌ Failed to fetch reviews:', error)
-    } else {
-      setReviews(data)
-    }
-  }
-
-  const [tutorListings, setTutorListings] = useState<any[]>([])
-
-  const fetchTutorListings = async () => {
-    const { data, error } = await supabase
-      .from('TUTOR_LISTING')
-      .select('*')
-      .eq('user_id', params.id)
-
-    if (error) {
-      console.error('❌ Failed to fetch tutor listings:', error)
-    } else {
-      setTutorListings(data)
-
-      // ✅ Compute unique subjects after data is fetched
-      const subjects = Array.from(
-        new Set(data.map((listing) => listing.course_code || listing.subject))
-      )
-      setUniqueSubjects(subjects)
-    }
-  }
+  const [loading, setLoading] = useState(true)
 
   type TabType = 'about' | 'reviews' | 'availability'
   const [activeTab, setActiveTab] = useState<TabType>('about')
 
   const router = useRouter()
 
+  const fetchTutorData = async () => {
+    const res = await fetch(`${FLASK_URL}/tutor/${params.id}`)
+    if (!res.ok) {
+      router.push('/tutors')
+      return
+    }
+    const data = await res.json()
+    setTutor(data.profile)
+    setReviews(data.reviews)
+    setUniqueSubjects([...new Set<string>(data.listings.map((l: any) => l.course_code))])
+    setLoading(false)
+  }
+
   useEffect(() => {
-    const fetchTutor = async () => {
-      const { data, error } = await supabase
-        .from('USERS') // your actual Supabase table
-        .select('*')   // or specify fields
-        .eq('id', params.id)
-        .single()
-
-      if (error || !data) {
-        console.error('Failed to fetch tutor:', error)
-        router.push('/tutors') // optional fallback
-      } else {
-        setTutor(data)
-      }
-
-      setLoading(false)
-    }
-
-    if (params.id) {
-      fetchTutor()
-      fetchTutorListings()
-      fetchReviews()
-    }
+    if (params.id) fetchTutorData()
   }, [params.id])
 
   if (loading) return <p>Loading...</p>
@@ -268,49 +219,32 @@ export default function TutorProfilePage({ params }: { params: { id: string } })
                   const form = e.target as HTMLFormElement
                   const formData = new FormData(form)
 
-                  const { data: user } = await supabase.auth.getUser()
-                  const student_id = user.user?.id
+                  const { data: { session } } = await supabase.auth.getSession()
+                  const { data: { user } } = await supabase.auth.getUser()
 
-                  const { error: insertError } = await supabase.from('REVIEWS').insert({
-                    tutor_id: params.id,
-                    student_id,
-                    rating: parseInt(formData.get('rating') as string),
-                    comment: formData.get('comment'),
-                    subject: formData.get('subject'),
+                  const res = await fetch(`${FLASK_URL}/reviews`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${session?.access_token}`,
+                      'x-refresh-token': session?.refresh_token ?? '',
+                    },
+                    body: JSON.stringify({
+                      tutor_id: params.id,
+                      student_id: user?.id,
+                      rating: parseInt(formData.get('rating') as string),
+                      comment: formData.get('comment'),
+                      subject: formData.get('subject'),
+                    })
                   })
 
-                  if (insertError) {
-                    alert('❌ Failed to submit review.')
+                  if (!res.ok) {
+                    alert('Failed to submit review.')
                     return
-                  }
-
-                  // Recalculate average rating
-                  const { data: allReviews, error: fetchError } = await supabase
-                    .from('REVIEWS')
-                    .select('rating')
-                    .eq('tutor_id', params.id)
-
-                  if (fetchError || !allReviews) {
-                    console.error('Failed to fetch reviews for average calculation.')
-                    return
-                  }
-
-                  const count = allReviews.length
-                  const total = allReviews.reduce((sum, r) => sum + r.rating, 0)
-                  const average = parseFloat((total / count).toFixed(2))
-
-                  // Update USERS table with new average and count
-                  const { error: updateError } = await supabase
-                    .from('USERS')
-                    .update({ rating: average, reviews: count })
-                    .eq('id', params.id)
-
-                  if (updateError) {
-                    console.error('⚠️ Failed to update tutor average rating:', updateError)
                   }
 
                   form.reset()
-                  fetchReviews() // refresh review tab if you're showing it
+                  fetchTutorData()
                 }}
                 className="mt-8 space-y-4"
               >

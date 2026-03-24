@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from dataclasses import dataclass
-from dataclasses import asdict
 import os
 import boto3
 
@@ -77,7 +76,7 @@ def create_listing():
             print("School not found for user:", user_id)
             return jsonify({'error': 'School not found in USERS table'}), 404
 
-        school = school_data["school"]
+        _ = school_data["school"]  # validated but not inserted — TUTOR/TUTEE_LISTING has no school column
     except Exception as e:
         print("Error fetching school:", e)
         return jsonify({'error': str(e)}), 500
@@ -105,9 +104,75 @@ def create_listing():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/get_listings', methods=['GET'])
+@app.route('/listings', methods=['GET'])
 def get_listings():
-    return jsonify([asdict(listing) for listing in listings]), 200
+    try:
+        tutor_res = supabase.table("TUTOR_LISTING").select("*, users:tutorid(school)").order("created_at", desc=True).execute()
+        tutee_res = supabase.table("TUTEE_LISTING").select("*, users:tuteeid(school)").order("created_at", desc=True).execute()
+
+        tutors = [{ **item, "id": item["tutorid"], "type": "tutor" } for item in (tutor_res.data or [])]
+        tutees = [{ **item, "id": item["tuteeid"], "type": "tutee" } for item in (tutee_res.data or [])]
+
+        combined = sorted(tutors + tutees, key=lambda x: x["created_at"], reverse=True)
+        return jsonify(combined), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/tutor/<tutor_id>', methods=['GET'])
+def get_tutor(tutor_id):
+    try:
+        profile_res = supabase.table("USERS").select("*").eq("id", tutor_id).single().execute()
+        if not profile_res.data:
+            return jsonify({"error": "Tutor not found"}), 404
+
+        listings_res = supabase.table("TUTOR_LISTING").select("*").eq("tutorid", tutor_id).execute()
+
+        reviews_res = supabase.table("REVIEWS").select(
+            "id, rating, comment, subject, created_at, student:student_id(firstname, lastname)"
+        ).eq("tutor_id", tutor_id).order("created_at", desc=True).execute()
+
+        return jsonify({
+            "profile": profile_res.data,
+            "listings": listings_res.data or [],
+            "reviews": reviews_res.data or [],
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/reviews', methods=['POST'])
+def submit_review():
+    data = request.get_json()
+
+    access_token = request.headers.get("Authorization", "").replace("Bearer ", "").strip()
+    refresh_token = request.headers.get("x-refresh-token", "").strip()
+
+    authed_client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
+    authed_client.auth.set_session(access_token, refresh_token)
+
+    required_fields = ['tutor_id', 'student_id', 'rating', 'comment', 'subject']
+    if not all(field in data for field in required_fields):
+        return jsonify({'error': 'Missing required field(s)'}), 400
+
+    try:
+        authed_client.table("REVIEWS").insert({
+            "tutor_id": data["tutor_id"],
+            "student_id": data["student_id"],
+            "rating": int(data["rating"]),
+            "comment": data["comment"],
+            "subject": data["subject"],
+        }).execute()
+
+        # Recalculate average rating and update tutor's USERS row
+        all_reviews = authed_client.table("REVIEWS").select("rating").eq("tutor_id", data["tutor_id"]).execute()
+        count = len(all_reviews.data)
+        average = round(sum(r["rating"] for r in all_reviews.data) / count, 2)
+        authed_client.table("USERS").update({"rating": average, "reviews": count}).eq("id", data["tutor_id"]).execute()
+
+        return jsonify({"success": True}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/get-s3-url', methods=['GET'])

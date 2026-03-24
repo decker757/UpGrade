@@ -1,66 +1,28 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabaseClient'
-import { Star, MapPin, Clock, BookOpen, MessageCircle, Heart } from 'lucide-react'
+import { Star, MapPin, Clock, MessageCircle, Heart } from 'lucide-react'
 
+const FLASK_URL = 'http://localhost:5001'
 
 const ModulesProfiles = () => {
   const [listings, setListings] = useState<any[]>([])
   const [visibleCount, setVisibleCount] = useState(6)
 
   const loadMore = () => {
-    setVisibleCount((prev) => prev + 6) // show 6 more each time
+    setVisibleCount((prev) => prev + 6)
   }
 
   useEffect(() => {
-  const fetchData = async () => {
-    const [tutorRes, tuteeRes] = await Promise.all([
-      supabase
-        .from('TUTOR_LISTING')
-        .select(`
-          *,
-          users:tutorid (
-            school
-          )
-        `)
-        .order('created_at', { ascending: false }),
-
-      supabase
-        .from('TUTEE_LISTING')
-        .select(`
-          *,
-          users:tuteeid (
-            school
-          )
-        `)
-        .order('created_at', { ascending: false })
-    ])
-
-    const tutorData = tutorRes.data?.map((item) => ({
-      ...item,
-      id: item.tutorid, // Ensure this is the correct field for tutor unique ID
-      type: 'tutor'
-    })) ?? []
-
-    const tuteeData = tuteeRes.data?.map((item) => ({
-      ...item,
-      id: item.tuteeid, // Ensure this is the correct field for tutee unique ID
-      type: 'tutee'
-    })) ?? []
-
-    const combined = [...tutorData, ...tuteeData].sort((a, b) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    )
-
-    setListings(combined)
-  }
-
-  fetchData()
-}, [])
+    const fetchData = async () => {
+      const res = await fetch(`${FLASK_URL}/listings`)
+      const data = await res.json()
+      setListings(data)
+    }
+    fetchData()
+  }, [])
 
   return (
     <div className="space-y-6">

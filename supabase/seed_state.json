@@ -1,0 +1,311 @@
+{
+  "tutors": [
+    [
+      "george.evans34@upgrade.com",
+      "1398d8a5-ce7f-43e0-8872-83ba47dd5e74",
+      "ECON101",
+      "Microeconomics",
+      "50"
+    ],
+    [
+      "jordan.evans12@upgrade.com",
+      "0bbb738d-40ba-43e6-9f46-e1320f90ebed",
+      "LAW101",
+      "Contract Law",
+      "44"
+    ],
+    [
+      "clifford.bennett90@upgrade.com",
+      "564f0d1c-f302-4658-880d-e1704de45fb3",
+      "FIN201",
+      "Corporate Finance",
+      "53"
+    ],
+    [
+      "cheryl.cunningham37@upgrade.com",
+      "96c77435-a5c2-4b99-85d2-dda0d0984ac7",
+      "IS216",
+      "Web Application Technologies II",
+      "52"
+    ],
+    [
+      "harriet.owen10@upgrade.com",
+      "25d0e581-8588-4eba-807c-25b0fbdcc9ec",
+      "IS483",
+      "IS Project Experience",
+      "39"
+    ],
+    [
+      "philip.jones54@upgrade.com",
+      "b86d3866-1e96-40f9-9b98-faa39b05659c",
+      "IS112",
+      "Data Management",
+      "42"
+    ],
+    [
+      "valerie.thomas22@upgrade.com",
+      "93e8008d-1a25-4edc-b811-434a6ee201d5",
+      "MKT101",
+      "Marketing Principles",
+      "37"
+    ],
+    [
+      "nathan.hall90@upgrade.com",
+      "1a9584be-339f-4b71-8c64-e7bea576131b",
+      "ECON101",
+      "Microeconomics",
+      "54"
+    ],
+    [
+      "joshua.marsh71@upgrade.com",
+      "48a77696-dd4d-4e1a-aad8-825841425a58",
+      "IS216",
+      "Web Application Technologies II",
+      "25"
+    ],
+    [
+      "colin.hobbs86@upgrade.com",
+      "fde3ad1e-3144-4efb-b517-87b57c87af26",
+      "IS216",
+      "Web Application Technologies II",
+      "44"
+    ],
+    [
+      "raymond.davies81@upgrade.com",
+      "c736e905-c64f-4fd5-8dfe-97636d183768",
+      "IS112",
+      "Data Management",
+      "40"
+    ],
+    [
+      "mohamed.walters26@upgrade.com",
+      "507274b6-9562-4dd1-9745-3d6797da68d0",
+      "IS483",
+      "IS Project Experience",
+      "29"
+    ],
+    [
+      "michael.harris61@upgrade.com",
+      "d6cb9bac-5f47-46dd-9b6e-eb334cd9594b",
+      "IS113",
+      "Web Application Development",
+      "58"
+    ],
+    [
+      "danielle.hall92@upgrade.com",
+      "8d7bf44d-4a2d-46fd-91ca-3b817b1fe029",
+      "IS483",
+      "IS Project Experience",
+      "34"
+    ],
+    [
+      "grace.rogers79@upgrade.com",
+      "f8d83162-9397-4e2f-afb1-c11664c31c9e",
+      "IS483",
+      "IS Project Experience",
+      "56"
+    ],
+    [
+      "leigh.fisher48@upgrade.com",
+      "0f0a12c3-b990-40f9-b23e-d31f2879b44f",
+      "IS112",
+      "Data Management",
+      "48"
+    ],
+    [
+      "linda.taylor44@upgrade.com",
+      "7ffa04ec-ab31-47a8-9378-d23df1b97742",
+      "ACCT201",
+      "Financial Accounting",
+      "40"
+    ],
+    [
+      "catherine.graham48@upgrade.com",
+      "a3825764-27c0-4eb8-a03d-668d351903ae",
+      "IS215",
+      "Digital Innovation",
+      "25"
+    ],
+    [
+      "billy.jenkins67@upgrade.com",
+      "d1aa5b05-ba75-4d34-a1e8-932884f10aeb",
+      "IS215",
+      "Digital Innovation",
+      "44"
+    ],
+    [
+      "ruth.daniels84@upgrade.com",
+      "8f01e070-4b45-4c20-8c88-4f454334be27",
+      "IS216",
+      "Web Application Technologies II",
+      "42"
+    ],
+    [
+      "samuel.goddard70@upgrade.com",
+      "4fabaf26-d1c3-42ea-8167-766a5303d19d",
+      "ACCT201",
+      "Financial Accounting",
+      "25"
+    ],
+    [
+      "barry.parkinson38@upgrade.com",
+      "5b2c83b8-2e54-4945-9efc-e167821e4600",
+      "CS101",
+      "Algorithms & Data Structures",
+      "25"
+    ],
+    [
+      "gordon.jones22@upgrade.com",
+      "ebc3d8a4-79ba-465e-a731-d7d583f8aeaf",
+      "ACCT201",
+      "Financial Accounting",
+      "28"
+    ],
+    [
+      "craig.austin27@upgrade.com",
+      "15c82b35-2cca-49b5-b0ce-591cf2b081e3",
+      "LAW101",
+      "Contract Law",
+      "54"
+    ],
+    [
+      "hazel.parsons26@upgrade.com",
+      "7aae3f73-8d0f-4a3f-a53c-2d90997d2382",
+      "CS101",
+      "Algorithms & Data Structures",
+      "29"
+    ],
+    [
+      "alex.cunningham26@upgrade.com",
+      "a43e53f1-e9fb-4190-9138-ed81ee22a7f3",
+      "ACCT201",
+      "Financial Accounting",
+      "53"
+    ],
+    [
+      "brian.gould75@upgrade.com",
+      "d83af101-8590-4aa6-96d4-2c54b5afaf8d",
+      "IS216",
+      "Web Application Technologies II",
+      "37"
+    ],
+    [
+      "charlene.stokes94@upgrade.com",
+      "3cfc6085-f7fc-46da-9eb9-bb6b10b83b64",
+      "IS113",
+      "Web Application Development",
+      "31"
+    ],
+    [
+      "karen.clarke40@upgrade.com",
+      "877e65ce-f739-43f0-8941-31a8ddcc4d4a",
+      "ACCT202",
+      "Management Accounting",
+      "25"
+    ],
+    [
+      "bradley.white16@upgrade.com",
+      "33cde383-58bd-4d52-bea9-fdfc77a18552",
+      "LAW101",
+      "Contract Law",
+      "36"
+    ],
+    [
+      "lewis.lewis90@upgrade.com",
+      "44499a1b-ff63-4dbb-afc1-a8be4b851285",
+      "IS483",
+      "IS Project Experience",
+      "59"
+    ],
+    [
+      "jean.evans29@upgrade.com",
+      "226ae223-1a29-4b03-90b4-09d686f894ff",
+      "CS101",
+      "Algorithms & Data Structures",
+      "36"
+    ],
+    [
+      "carl.henderson21@upgrade.com",
+      "073ae6a3-c20b-4ce3-8d6f-fc4dc4743852",
+      "FIN201",
+      "Corporate Finance",
+      "55"
+    ],
+    [
+      "judith.gill10@upgrade.com",
+      "53e6f727-0be5-486a-849a-ecd8e83f7565",
+      "ECON102",
+      "Macroeconomics",
+      "30"
+    ],
+    [
+      "edward.rose11@upgrade.com",
+      "f7852ace-62d2-4e57-afb6-f1f5ced3cd53",
+      "IS113",
+      "Web Application Development",
+      "42"
+    ]
+  ],
+  "tutees": [
+    [
+      "callum.fisher15@upgrade.com",
+      "c362bc2e-3ed2-4c05-a8d3-ec308a83855b"
+    ],
+    [
+      "dean.singh51@upgrade.com",
+      "bfe6de60-b60b-49f2-bc58-6c125abf19d5"
+    ],
+    [
+      "natasha.watson42@upgrade.com",
+      "45ef1f7e-4f93-4a7c-98ee-ab27068930ae"
+    ],
+    [
+      "diane.dixon79@upgrade.com",
+      "635c6344-effc-42da-9bed-1092d47c0c8d"
+    ],
+    [
+      "brian.wilson89@upgrade.com",
+      "7f5b585c-92a8-4fc1-b896-d1b2ddf7f163"
+    ],
+    [
+      "georgina.preston79@upgrade.com",
+      "4dfa799b-1dea-486a-9df5-1a841e78c6cd"
+    ],
+    [
+      "bryan.morrison42@upgrade.com",
+      "19cb0f03-0442-4cf8-9ff7-781f9aceb163"
+    ],
+    [
+      "sarah.mitchell25@upgrade.com",
+      "7bf06996-6ddd-419d-a129-db7d07554ab9"
+    ],
+    [
+      "christian.taylor23@upgrade.com",
+      "37767331-9a0b-44ff-bb95-6d099bba8b91"
+    ],
+    [
+      "georgia.thompson70@upgrade.com",
+      "16ca004d-358c-4a2b-b70f-68f16e5a8be2"
+    ],
+    [
+      "angela.bond68@upgrade.com",
+      "806f54d2-3e4b-4275-a4fc-675e7e804678"
+    ],
+    [
+      "karl.leonard47@upgrade.com",
+      "838141a5-e10a-4654-b833-fdf63b368db0"
+    ],
+    [
+      "kate.burns59@upgrade.com",
+      "fc7a5e67-600e-4d72-8f8b-65fcdcafef94"
+    ],
+    [
+      "jack.powell78@upgrade.com",
+      "e089f04b-2a7f-44b5-b726-1b50ea585612"
+    ],
+    [
+      "rhys.higgins81@upgrade.com",
+      "8840967a-45a0-41e6-acfb-b9a5ddc85732"
+    ]
+  ]
+}

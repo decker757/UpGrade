@@ -1,16 +1,23 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
-import TutorSearch from '@/components/TutorSearch'
 import NotesSection from '@/components/NotesSection'
-import TutorProfiles from '@/components/TutorProfiles'
 import ModulesProfiles from '@/components/ModuleBlocks'
 import Footer from '@/components/Footer'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'tutors' | 'notes'>('tutors')
+  const router = useRouter()
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) router.push('/auth/login')
+    })
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">

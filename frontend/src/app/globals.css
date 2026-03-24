@@ -10,9 +10,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-rgb: 0, 0, 0;
+    --background-start-rgb: 255, 255, 255;
+    --background-end-rgb: 255, 255, 255;
   }
 }
 
@@ -24,6 +24,15 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+}
+
+/* Fix browser autofill overriding input background and text colour */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #111827;
+  -webkit-box-shadow: 0 0 0px 1000px white inset;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 @layer utilities {
