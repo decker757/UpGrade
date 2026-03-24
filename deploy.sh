@@ -3,7 +3,7 @@
 # Usage: bash deploy.sh
 
 set -e
-cd /home/ubuntu/HackInTheClouds
+cd /home/ec2-user/UpGrade
 
 echo "==> Pulling latest code..."
 git pull origin main
