@@ -25,7 +25,11 @@ supabase: Client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
-CORS(app, supports_credentials=True, origins=["http://localhost:3000", "http://52.203.210.111:3000"])
+CORS(app, supports_credentials=True, origins=[
+    "http://localhost:3000",
+    "http://3.107.250.225:3000",
+    "http://3.107.250.225",
+])
 
 listings = []
 
@@ -107,14 +111,40 @@ def create_listing():
 @app.route('/listings', methods=['GET'])
 def get_listings():
     try:
-        tutor_res = supabase.table("TUTOR_LISTING").select("*, users:tutorid(school)").order("created_at", desc=True).execute()
-        tutee_res = supabase.table("TUTEE_LISTING").select("*, users:tuteeid(school)").order("created_at", desc=True).execute()
+        viewer_id = request.args.get("viewer_id")
+
+        tutor_res = supabase.table("TUTOR_LISTING").select("*, users:tutorid(school, rating, reviews)").order("created_at", desc=True).execute()
+        tutee_res = supabase.table("TUTEE_LISTING").select("*, users:tuteeid(school, rating, reviews)").order("created_at", desc=True).execute()
 
         tutors = [{ **item, "id": item["tutorid"], "type": "tutor" } for item in (tutor_res.data or [])]
         tutees = [{ **item, "id": item["tuteeid"], "type": "tutee" } for item in (tutee_res.data or [])]
 
         combined = sorted(tutors + tutees, key=lambda x: x["created_at"], reverse=True)
+
+        # Hide the viewer's own listings — a user shouldn't match with themselves
+        if viewer_id:
+            combined = [item for item in combined if item.get("id") != viewer_id]
+
         return jsonify(combined), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/tutors', methods=['GET'])
+def get_tutors():
+    try:
+        # Only return users who have at least one tutor listing
+        res = supabase.table("TUTOR_LISTING").select("tutorid, users:tutorid(id, firstname, lastname, school, aboutme, photourl, rating, reviews)").execute()
+
+        seen = set()
+        tutors = []
+        for row in (res.data or []):
+            user = row.get("users")
+            if user and user["id"] not in seen:
+                seen.add(user["id"])
+                tutors.append(user)
+
+        return jsonify(tutors), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -196,6 +226,48 @@ def get_s3_url():
             ExpiresIn=60
         )
         return jsonify({'url': url})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/notes', methods=['GET'])
+def get_notes():
+    try:
+        res = supabase.table("NOTES").select(
+            "*, uploader:user_id(firstname, lastname)"
+        ).order("created_at", desc=True).execute()
+        return jsonify(res.data or []), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/notes', methods=['POST'])
+def create_note():
+    data = request.get_json()
+
+    access_token = request.headers.get("Authorization", "").replace("Bearer ", "").strip()
+    refresh_token = request.headers.get("x-refresh-token", "").strip()
+
+    authed_client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
+    authed_client.auth.set_session(access_token, refresh_token)
+
+    required_fields = ['user_id', 'title', 'subject', 'module_code', 'file_url']
+    if not all(field in data for field in required_fields):
+        return jsonify({'error': 'Missing required field(s)'}), 400
+
+    try:
+        insert_response = authed_client.table("NOTES").insert({
+            'user_id':     data['user_id'],
+            'title':       data['title'],
+            'subject':     data['subject'],
+            'module_code': data['module_code'],
+            'description': data.get('description', ''),
+            'file_url':    data['file_url'],
+        }).execute()
+
+        if insert_response.data:
+            return jsonify({'success': True, 'note': insert_response.data}), 201
+        return jsonify({'error': 'Failed to insert note'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

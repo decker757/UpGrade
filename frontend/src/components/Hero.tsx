@@ -34,7 +34,7 @@ const Hero = ({ activeTab, setActiveTab }: HeroProps) => {
                 }`}
               >
                 <Users className="h-5 w-5" />
-                <span>Find Tutors</span>
+                <span>Listings</span>
               </button>
               <button
                 onClick={() => setActiveTab('notes')}

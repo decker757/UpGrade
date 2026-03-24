@@ -1,20 +1,24 @@
-import React, { useState } from 'react'
-import { Search, Filter, MapPin, DollarSign, Star, Clock } from 'lucide-react'
+import React from 'react'
+import { Filter, MapPin } from 'lucide-react'
+import { TutorFilters } from '@/app/tutors/page'
 
-const TutorSearch = () => {
-  const [filters, setFilters] = useState({
-    subject: '',
-    priceRange: '',
-    rating: '',
-    availability: '',
-    location: ''
-  })
+// Keywords that match the school values stored in the DB (e.g. "Bachelor of Accountancy")
+const schools = [
+  { label: 'Accountancy', keyword: 'Accountancy' },
+  { label: 'Business Management', keyword: 'Business Management' },
+  { label: 'Computer Science', keyword: 'Computer Science' },
+  { label: 'Information Systems', keyword: 'Information Systems' },
+  { label: 'Economics', keyword: 'Economics' },
+  { label: 'Law', keyword: 'Laws' },
+  { label: 'Social Science', keyword: 'Social Science' },
+]
 
-  const schools = [
-    'Integrative Studies', 'Graduate Research Studies', 'Accountancy', 
-    'Economics', 'Computing & Information Systems', 'Law', 'Social Sciences', 'Business'
-  ]
+type Props = {
+  filters: TutorFilters
+  setFilters: (f: TutorFilters) => void
+}
 
+const TutorSearch = ({ filters, setFilters }: Props) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
@@ -24,22 +28,22 @@ const TutorSearch = () => {
           <span>Advanced Filters</span>
         </button>
       </div>
-      
-      <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">School</label>
           <select
-            value={filters.subject}
-            onChange={(e) => setFilters({ ...filters, subject: e.target.value })}
+            value={filters.school}
+            onChange={(e) => setFilters({ ...filters, school: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="">All Schools</option>
-            {schools.map((subject) => (
-              <option key={subject} value={subject}>{subject}</option>
+            {schools.map((s) => (
+              <option key={s.keyword} value={s.keyword}>{s.label}</option>
             ))}
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
           <select
@@ -54,7 +58,7 @@ const TutorSearch = () => {
             <option value="75+">$75+/hour</option>
           </select>
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
           <select
@@ -63,27 +67,12 @@ const TutorSearch = () => {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="">Any Rating</option>
-            <option value="4.5+">4.5+ Stars</option>
-            <option value="4.0+">4.0+ Stars</option>
-            <option value="3.5+">3.5+ Stars</option>
+            <option value="4.5">4.5+ Stars</option>
+            <option value="4.0">4.0+ Stars</option>
+            <option value="3.5">3.5+ Stars</option>
           </select>
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Availability</label>
-          <select
-            value={filters.availability}
-            onChange={(e) => setFilters({ ...filters, availability: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">Any Time</option>
-            <option value="morning">Morning</option>
-            <option value="afternoon">Afternoon</option>
-            <option value="evening">Evening</option>
-            <option value="weekend">Weekend</option>
-          </select>
-        </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
           <div className="relative">
@@ -96,21 +85,6 @@ const TutorSearch = () => {
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
-        </div>
-      </div>
-      
-      <div className="flex justify-between items-center mt-6">
-        <div className="text-sm text-gray-600">
-          Showing 127 tutors matching your criteria
-        </div>
-        <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-600">Sort by:</span>
-          <select className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-indigo-500">
-            <option>Best Match</option>
-            <option>Highest Rated</option>
-            <option>Lowest Price</option>
-            <option>Most Reviews</option>
-          </select>
         </div>
       </div>
     </div>

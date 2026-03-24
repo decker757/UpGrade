@@ -6,15 +6,16 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import { supabase } from '@/lib/supabaseClient'
-import { ArrowLeft, Star, MapPin, Clock, Heart, Share2, BookOpen, Calendar, Award, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Star, Heart, Share2, BookOpen, Calendar, Award } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
-const FLASK_URL = 'http://localhost:5001'
+const FLASK_URL = process.env.NEXT_PUBLIC_FLASK_URL ?? 'http://localhost:5001'
 
 export default function TutorProfilePage({ params }: { params: { id: string } }) {
   const [tutor, setTutor] = useState<any | null>(null)
   const [reviews, setReviews] = useState<any[]>([])
+  const [listings, setListings] = useState<any[]>([])
   const [uniqueSubjects, setUniqueSubjects] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -32,6 +33,7 @@ export default function TutorProfilePage({ params }: { params: { id: string } })
     const data = await res.json()
     setTutor(data.profile)
     setReviews(data.reviews)
+    setListings(data.listings)
     setUniqueSubjects([...new Set<string>(data.listings.map((l: any) => l.course_code))])
     setLoading(false)
   }
@@ -57,68 +59,44 @@ export default function TutorProfilePage({ params }: { params: { id: string } })
         
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-          <div className="relative h-48 bg-gradient-to-r from-indigo-500 to-purple-600">
-            <Image
-              src=''
-              alt="Cover"
-              fill
-              className="object-cover opacity-30"
-            />
-          </div>
-          
-          <div className="relative px-8 pb-8">
-            <div className="flex flex-col md:flex-row md:items-end md:space-x-6 -mt-16">
-              <div className="relative">
-                <Image
-                  src={tutor.photourl}
-                  alt={tutor.name}
-                  width={128}
-                  height={128}
-                  className="rounded-full border-4 border-white shadow-lg"
-                />
-                {tutor.verified && (
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
-                    <CheckCircle className="w-4 h-4 text-white" />
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex-1 mt-4 md:mt-0">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{tutor.name}</h1>
-                    <p className="text-lg text-indigo-600 mb-2">{tutor.subject}</p>
-                    <p className="text-gray-600 mb-4">{tutor.university}</p>
-                    
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                        <span className="font-medium">{tutor.rating}</span>
-                        <span> ({tutor.reviews ? `${tutor.reviews} reviews` : 'No reviews yet'})</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <MapPin className="h-4 w-4" />
-                        <span>{tutor.location}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-4 w-4" />
-                        <span>Responds {tutor.responseTime}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-3 mt-4 md:mt-0">
-                    <button className="p-2 text-gray-400 hover:text-red-500 border border-gray-300 rounded-lg transition-colors">
-                      <Heart className="h-5 w-5" />
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-indigo-600 border border-gray-300 rounded-lg transition-colors">
-                      <Share2 className="h-5 w-5" />
-                    </button>
-                    <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium">
-                      Book Session
-                    </button>
-                  </div>
+          <div className="h-48 bg-gradient-to-r from-indigo-500 to-purple-600" />
+
+          <div className="px-8 pb-8">
+            {/* Avatar — overlaps the banner */}
+            <div className="-mt-16 mb-4">
+              <Image
+                src={tutor.photourl}
+                alt={`${tutor.firstname} ${tutor.lastname}`}
+                width={128}
+                height={128}
+                className="rounded-full border-4 border-white shadow-lg"
+              />
+            </div>
+
+            {/* Name, school, rating, actions — all below the banner */}
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                  {tutor.firstname} {tutor.lastname}
+                </h1>
+                <p className="text-gray-600 mb-3">{tutor.school}</p>
+                <div className="flex items-center space-x-1 text-sm text-gray-600">
+                  <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                  <span className="font-medium">{tutor.rating ?? '—'}</span>
+                  <span>({tutor.reviews ? `${tutor.reviews} reviews` : 'No reviews yet'})</span>
                 </div>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <button className="p-2 text-gray-400 hover:text-red-500 border border-gray-300 rounded-lg transition-colors">
+                  <Heart className="h-5 w-5" />
+                </button>
+                <button className="p-2 text-gray-400 hover:text-indigo-600 border border-gray-300 rounded-lg transition-colors">
+                  <Share2 className="h-5 w-5" />
+                </button>
+                <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium">
+                  Book Session
+                </button>
               </div>
             </div>
           </div>
@@ -155,7 +133,7 @@ export default function TutorProfilePage({ params }: { params: { id: string } })
               <div className="space-y-8">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">About Me</h3>
-                  <p className="text-gray-700 leading-relaxed">{tutor.description}</p>
+                  <p className="text-gray-700 leading-relaxed">{tutor.aboutme}</p>
                 </div>
                 
                 <div>
@@ -314,7 +292,9 @@ export default function TutorProfilePage({ params }: { params: { id: string } })
                     <div className="space-y-4">
                       <div className="p-4 bg-gray-50 rounded-lg">
                         <div className="text-sm text-gray-600 mb-1">Hourly Rate</div>
-                        <div className="text-2xl font-bold text-gray-900">{tutor.hourlyRate}</div>
+                        <div className="text-2xl font-bold text-gray-900">
+                          {listings.length > 0 ? `$${listings[0].rate}/hr` : '—'}
+                        </div>
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-medium text-gray-700">Subject Focus</label>

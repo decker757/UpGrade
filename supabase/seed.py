@@ -228,6 +228,7 @@ else:
             "photourl": photourl,
             "rating": 0,
             "reviews": 0,
+            "usertype": "Tutor" if is_tutor else "Tutee",
         }).execute()
 
         role = "tutor" if is_tutor else "tutee"

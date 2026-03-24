@@ -1,42 +1,191 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { GraduationCap, BookOpen, FileText, AlignLeft, School } from 'lucide-react'
+import { supabase } from '@/lib/supabaseClient'
 
-export default function uploadNotes() {
+const SMU_SCHOOLS = [
+  'School of Computing and Information Systems',
+  'School of Business',
+  'School of Accountancy',
+  'School of Economics',
+  'School of Law',
+  'School of Social Sciences',
+  'College of Integrative Studies',
+]
+
+const FLASK_URL = process.env.NEXT_PUBLIC_FLASK_URL ?? 'http://localhost:5001'
+const S3_BASE_URL = process.env.NEXT_PUBLIC_S3_BASE_URL ?? ''
+
+export default function UploadNotesPage() {
+  const [formData, setFormData] = useState({
+    title: '',
+    subject: SMU_SCHOOLS[0],
+    module_code: '',
+    description: '',
+  })
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
+  const router = useRouter()
 
-  const handleUpload = async () => {
-  if (!file) return
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
 
-  const res = await fetch(`http://localhost:5001/get-s3-url?filename=${file.name}&contentType=${file.type}`)
-  const { url } = await res.json()
+    if (!file) { alert('Please select a PDF file.'); return }
+    if (file.type !== 'application/pdf') { alert('Only PDF files are supported.'); return }
 
-  const uploadRes = await fetch(url, {
-    method: 'PUT',
-    headers: { 'Content-Type': file.type },
-    body: file,
-  })
+    setUploading(true)
 
-  if (uploadRes.ok) alert('✅ Uploaded')
-  else alert('❌ Upload failed')
-}
+    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!session || !user) {
+      alert('You must be logged in to upload notes.')
+      setUploading(false)
+      return
+    }
+
+    // Unique S3 key to avoid collisions
+    const s3Key = `notes/${user.id}/${Date.now()}_${file.name}`
+
+    // Step 1: Get presigned PUT URL
+    const urlRes = await fetch(`${FLASK_URL}/get-s3-url?filename=${encodeURIComponent(s3Key)}&contentType=application/pdf`)
+    const { url, error: urlError } = await urlRes.json()
+    if (urlError || !url) { alert('Failed to get upload URL.'); setUploading(false); return }
+
+    // Step 2: Upload file to S3
+    const uploadRes = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/pdf' },
+      body: file,
+    })
+    if (!uploadRes.ok) { alert('File upload to S3 failed.'); setUploading(false); return }
+
+    // Step 3: Save metadata to DB
+    const fileUrl = `${S3_BASE_URL}/${s3Key}`
+    const metaRes = await fetch(`${FLASK_URL}/notes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+        'x-refresh-token': session.refresh_token ?? '',
+      },
+      body: JSON.stringify({
+        user_id: user.id,
+        title: formData.title,
+        subject: formData.subject,
+        module_code: formData.module_code,
+        description: formData.description,
+        file_url: fileUrl,
+      }),
+    })
+
+    if (!metaRes.ok) { alert('File uploaded but failed to save metadata.'); setUploading(false); return }
+
+    router.push('/')
+  }
 
   return (
-    <div className="p-8 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Upload File</h1>
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-        className="mb-4"
-      />
-      <button
-        onClick={handleUpload}
-        disabled={!file || uploading}
-        className="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
-      >
-        {uploading ? 'Uploading...' : 'Upload to AWS S3'}
-      </button>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-800 flex items-center justify-center px-4 py-8">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center space-x-2 text-white">
+            <GraduationCap className="h-10 w-10" />
+            <span className="text-3xl font-bold">UpGrade</span>
+          </Link>
+          <p className="text-indigo-200 mt-2">Share your study notes</p>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Title</label>
+              <div className="relative">
+                <FileText className="absolute left-3 top-3.5 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  required
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g. IS112 Data Management Cheat Sheet"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">School</label>
+              <div className="relative">
+                <School className="absolute left-3 top-3.5 h-4 w-4 text-gray-400" />
+                <select
+                  value={formData.subject}
+                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  {SMU_SCHOOLS.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Module Code</label>
+              <div className="relative">
+                <BookOpen className="absolute left-3 top-3.5 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  required
+                  value={formData.module_code}
+                  onChange={(e) => setFormData({ ...formData, module_code: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="e.g. IS112"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+              <div className="relative">
+                <AlignLeft className="absolute left-3 top-3.5 h-4 w-4 text-gray-400" />
+                <textarea
+                  rows={3}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                  placeholder="What's covered in these notes?"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">PDF File</label>
+              <input
+                type="file"
+                accept="application/pdf"
+                required
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                className="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-medium hover:file:bg-indigo-100"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={uploading}
+              className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {uploading ? 'Uploading...' : 'Upload Notes'}
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-gray-600">
+            Want to go back?{' '}
+            <Link href="/" className="text-indigo-600 hover:text-indigo-700 font-medium">Home</Link>
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

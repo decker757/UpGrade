@@ -5,14 +5,27 @@ import Header from '@/components/Header'
 import TutorSearch from '@/components/TutorSearch'
 import TutorProfiles from '@/components/TutorProfiles'
 import Footer from '@/components/Footer'
-import { Users, Filter, MapPin } from 'lucide-react'
+import { Users } from 'lucide-react'
+
+export type TutorFilters = {
+  school: string
+  priceRange: string
+  rating: string
+  location: string
+}
 
 export default function TutorsPage() {
+  const [filters, setFilters] = useState<TutorFilters>({
+    school: '',
+    priceRange: '',
+    rating: '',
+    location: '',
+  })
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
-      {/* Hero Section */}
+
       <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
@@ -24,12 +37,12 @@ export default function TutorsPage() {
           </div>
         </div>
       </div>
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <TutorSearch />
-        <TutorProfiles />
+        <TutorSearch filters={filters} setFilters={setFilters} />
+        <TutorProfiles filters={filters} />
       </main>
-      
+
       <Footer />
     </div>
   )

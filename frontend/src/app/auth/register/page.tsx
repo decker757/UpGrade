@@ -17,7 +17,7 @@ export default function RegisterPage() {
     confirmPassword: '',
     highestEducation: '',
     aboutMe: '',
-    userType: 'student',
+    userType: 'Tutor',
     photourl: '',
     agreeToTerms: true
   })
@@ -51,9 +51,10 @@ export default function RegisterPage() {
           id: userId,
           firstname: firstName,
           lastname: lastName,
-          school: formData.highestEducation, // assuming school = highestEducation
+          school: formData.highestEducation,
           aboutme: formData.aboutMe,
           photourl: formData.photourl,
+          usertype: formData.userType,
         }
         ])
       }
@@ -206,6 +207,34 @@ export default function RegisterPage() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder:font-semibold resize-none"
                 placeholder="Briefly describe yourself and your experience..."
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">I am a</label>
+              <div className="flex space-x-6">
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="Tutor"
+                    checked={formData.userType === 'Tutor'}
+                    onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
+                    className="text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 font-medium">Tutor</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="Tutee"
+                    checked={formData.userType === 'Tutee'}
+                    onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
+                    className="text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <span className="ml-2 text-sm text-gray-700 font-medium">Tutee</span>
+                </label>
+              </div>
             </div>
 
             <div>
