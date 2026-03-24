@@ -8,8 +8,10 @@ import NotesSection from '@/components/NotesSection'
 import ModulesProfiles from '@/components/ModuleBlocks'
 import Footer from '@/components/Footer'
 import { supabase } from '@/lib/supabaseClient'
+import { useRequireAuth } from '@/lib/useRequireAuth'
 
 export default function Home() {
+  useRequireAuth()
   const [activeTab, setActiveTab] = useState<'tutors' | 'notes'>('tutors')
   const router = useRouter()
 

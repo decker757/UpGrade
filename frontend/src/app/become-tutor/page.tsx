@@ -4,8 +4,10 @@ import React, { useState } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { GraduationCap, Users, DollarSign, Clock, CheckCircle, Star, ArrowRight } from 'lucide-react'
+import { useRequireAuth } from '@/lib/useRequireAuth'
 
 export default function BecomeTutorPage() {
+  useRequireAuth()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

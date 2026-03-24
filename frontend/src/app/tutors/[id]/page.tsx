@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import { supabase } from '@/lib/supabaseClient'
+import { useRequireAuth } from '@/lib/useRequireAuth'
 import { ArrowLeft, Star, Heart, Share2, BookOpen, Calendar, Award } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -22,6 +23,7 @@ export default function TutorProfilePage({ params }: { params: { id: string } })
   type TabType = 'about' | 'reviews' | 'availability'
   const [activeTab, setActiveTab] = useState<TabType>('about')
 
+  useRequireAuth()
   const router = useRouter()
 
   const fetchTutorData = async () => {

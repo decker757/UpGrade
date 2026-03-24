@@ -6,6 +6,7 @@ import TutorSearch from '@/components/TutorSearch'
 import TutorProfiles from '@/components/TutorProfiles'
 import Footer from '@/components/Footer'
 import { Users } from 'lucide-react'
+import { useRequireAuth } from '@/lib/useRequireAuth'
 
 export type TutorFilters = {
   school: string
@@ -15,6 +16,7 @@ export type TutorFilters = {
 }
 
 export default function TutorsPage() {
+  useRequireAuth()
   const [filters, setFilters] = useState<TutorFilters>({
     school: '',
     priceRange: '',
