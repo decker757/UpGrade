@@ -37,7 +37,6 @@ export default function BecomeTutorPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Tutor application:', formData)
   }
 
   return (

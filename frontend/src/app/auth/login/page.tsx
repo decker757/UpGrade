@@ -31,7 +31,6 @@ export default function LoginPage() {
     if (error) {
       alert(`❌ ${error.message}`);
     } else {
-      console.log('✅ Supabase login successful:', data);
       router.push('/');
     }
   };

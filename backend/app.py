@@ -72,8 +72,6 @@ class Listing:
 def create_listing():
     data = request.get_json()
 
-    print("Received listing payload:", data)
-
     # Create a user-scoped Supabase client so RLS policies are enforced.
     # The frontend passes its Supabase JWT in the Authorization and x-refresh-token headers.
     authed_client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY)
@@ -104,12 +102,10 @@ def create_listing():
         school_data = response.data
 
         if not school_data or "school" not in school_data:
-            print("School not found for user:", user_id)
             return jsonify({'error': 'School not found in USERS table'}), 404
 
         _ = school_data["school"]  # validated but not inserted — TUTOR/TUTEE_LISTING has no school column
     except Exception as e:
-        print("Error fetching school:", e)
         return jsonify({'error': str(e)}), 500
 
     listing = {
@@ -125,13 +121,10 @@ def create_listing():
     try:
         insert_response = authed_client.table(table_name).insert(listing).execute()
         if insert_response.data:
-            print("Listing created:", insert_response.data)
             return jsonify({'success': True, 'listing': insert_response.data}), 201
         else:
-            print("Failed to insert listing")
             return jsonify({'error': 'Failed to insert listing'}), 500
     except Exception as e:
-        print("Error inserting listing:", e)
         return jsonify({'error': str(e)}), 500
 
 
