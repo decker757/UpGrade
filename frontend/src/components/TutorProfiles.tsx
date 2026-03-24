@@ -50,11 +50,10 @@ const TutorProfiles = ({ filters }: Props) => {
         {filtered.slice(0, visibleCount).map((tutor) => (
           <div key={tutor.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <div className="relative">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={tutor.photourl || `https://ui-avatars.com/api/?name=${tutor.firstname}+${tutor.lastname}&background=6366f1&color=fff&size=400`}
                 alt={`${tutor.firstname} ${tutor.lastname}`}
-                width={400}
-                height={200}
                 className="w-full h-48 object-cover"
                 onError={(e) => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${tutor.firstname}+${tutor.lastname}&background=6366f1&color=fff&size=400` }}
               />

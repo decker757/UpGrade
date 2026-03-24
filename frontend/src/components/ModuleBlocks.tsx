@@ -61,11 +61,10 @@ const ModulesProfiles = () => {
         // {modules.map((module) => (
           <div key={module.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <div className="relative">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={module.photourl || 'https://placehold.co/400x200/6366f1/white?text=Listing'}
                 alt={module.title}
-                width={400}
-                height={200}
                 className="w-full h-48 object-cover"
                 onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/400x200/6366f1/white?text=Listing' }}
               />

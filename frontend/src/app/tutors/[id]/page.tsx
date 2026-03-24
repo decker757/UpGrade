@@ -64,7 +64,8 @@ export default function TutorProfilePage({ params }: { params: { id: string } })
           <div className="px-8 pb-8">
             {/* Avatar — overlaps the banner */}
             <div className="-mt-16 mb-4">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={tutor.photourl || `https://ui-avatars.com/api/?name=${tutor.firstname}+${tutor.lastname}&background=6366f1&color=fff&size=128`}
                 alt={`${tutor.firstname} ${tutor.lastname}`}
                 width={128}
