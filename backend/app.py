@@ -24,7 +24,7 @@ supabase: Client = create_client(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY')
-CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+CORS(app, supports_credentials=True, origins=["http://localhost:3000", "http://52.203.210.111:3000"])
 
 listings = []
 
@@ -42,6 +42,7 @@ class Listing:
 @app.route('/create_listing', methods=['POST'])
 def create_listing():
     data = request.get_json()
+    
     print("✅ Received JSON:", data)
 
 
@@ -134,7 +135,6 @@ def get_s3_url():
         return jsonify({'error': str(e)}), 500
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
 
