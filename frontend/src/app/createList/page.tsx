@@ -17,6 +17,7 @@ import {
 import { supabase } from '@/lib/supabaseClient'
 
 export default function CreateListingPage() {
+  const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     userType: 'Tutor',
     title: '',
@@ -31,6 +32,8 @@ export default function CreateListingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  if (submitting) return;
+  setSubmitting(true);
   const { data: { session } } = await supabase.auth.getSession()
   const accessToken = session?.access_token
   const refreshToken = session?.refresh_token;
@@ -79,10 +82,10 @@ export default function CreateListingPage() {
 
   const result = await response.json();
   if (response.ok) {
-    alert("✅ Listing created!");
     router.push('/');
   } else {
     alert(`❌ ${result.error || "Failed to create listing"}`);
+    setSubmitting(false);
   }
 };
 
@@ -248,9 +251,10 @@ export default function CreateListingPage() {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              disabled={submitting}
+              className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Listing
+              {submitting ? 'Creating...' : 'Create Listing'}
             </button>
           </form>
 
