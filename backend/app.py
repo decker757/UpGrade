@@ -29,6 +29,8 @@ ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://3.26.103.83:3000",
     "http://3.26.103.83",
+    "http://ec2-3-26-103-83.ap-southeast-2.compute.amazonaws.com:3000",
+    "http://ec2-3-26-103-83.ap-southeast-2.compute.amazonaws.com",
 ]
 
 @app.after_request
