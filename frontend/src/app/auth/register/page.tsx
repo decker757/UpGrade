@@ -59,7 +59,7 @@ export default function RegisterPage() {
         ])
       }
 
-      alert("✅ Account created! Please check your email to confirm.")
+      alert("✅ Account created!")
       router.push('/auth/login')
     }
   }
