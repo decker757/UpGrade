@@ -33,8 +33,8 @@ ALLOWED_ORIGINS = [
 
 @app.after_request
 def add_cors(response):
-    origin = request.headers.get("Origin", "")
-    if origin in ALLOWED_ORIGINS:
+    origin = request.headers.get("Origin")
+    if origin:
         response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, x-refresh-token"
@@ -45,8 +45,8 @@ def add_cors(response):
 @app.route("/<path:path>", methods=["OPTIONS"])
 def handle_options(path):
     response = jsonify({})
-    origin = request.headers.get("Origin", "")
-    if origin in ALLOWED_ORIGINS:
+    origin = request.headers.get("Origin")
+    if origin:
         response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, x-refresh-token"
