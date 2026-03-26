@@ -57,9 +57,8 @@ const ModulesProfiles = () => {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.slice(0, visibleCount).map((module) => (
-        // {modules.map((module) => (
-          <div key={module.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+        {filtered.slice(0, visibleCount).map((module, idx) => (
+          <div key={`${module.type}-${module.id}-${idx}`} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <div className="relative">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
